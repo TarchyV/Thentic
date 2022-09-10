@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "698159224636",
+    "project_id": "thentic-app",
+    "storage_bucket": "thentic-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:698159224636:android:cd72ad8e6ddbad0ffcb039",
+        "android_client_info": {
+          "package_name": "com.example.thentic_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "698159224636-h8vtcujglokjkr7sbacb3b0caj4at6qo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZk_xj_0wTxQruYjG7ty7-AXAHr68-RyA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "698159224636-h8vtcujglokjkr7sbacb3b0caj4at6qo.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "698159224636-1ejfa6l6afs6m4jgtqi7ikbljmska3m4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.thenticApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
