@@ -8,12 +8,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:thentic_app/constants/app_bloc_providers.dart';
 import 'package:thentic_app/constants/app_dis.dart';
 import 'package:thentic_app/constants/app_repository_providers.dart';
+import 'package:thentic_app/cubits/feed/feed_cubit.dart';
 import 'package:thentic_app/cubits/user/user_cubit.dart';
 import 'package:thentic_app/cubits/utility/utility_cubit.dart';
 import 'package:thentic_app/global_cubit_observer.dart';
 import 'package:thentic_app/resources/user_repository.dart';
 import 'package:thentic_app/views/feed.dart';
 import 'package:thentic_app/views/login_signup.dart';
+import 'package:thentic_app/navigator.dart';
 import 'firebase_options.dart';
 
 late List<CameraDescription> _cameras;
@@ -75,7 +77,7 @@ class MyApp extends StatelessWidget {
                   child: CircularProgressIndicator(),
                 );
               } else if (state is UserLoggedIn) {
-                return FeedPage();
+                return NavigatorPage(userId: state.userId);
               } else {
                 return LoginSignUpPage();
               }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 import 'package:thentic_app/resources/post.dart';
 import 'package:thentic_app/resources/user_repository.dart';
@@ -19,6 +20,9 @@ class UserCubit extends Cubit<UserState> {
 
 Future<List<String>> getFollowing(String userId ) async{
   return _userRepository.getFollowing(userId);
+}
+Future<List<String>> getFollowers(String userId ) async{
+  return _userRepository.getFollowers(userId);
 }
 
 
@@ -116,7 +120,20 @@ void getUser() async {
 
 
   void followMyself() async {
-   await _userRepository.addFollowing(getUserId(), getUserId());
+  //  await _userRepository.addFollowing(getUserId(), getUserId());
+   await _userRepository.addFollower(getUserId(), getUserId());
+  }
+
+  void followUser(String userId) async {
+    await _userRepository.addFollowing(getUserId(), userId);
+    await _userRepository.addFollower(userId, getUserId());
+    getUser();
+  }
+
+  void unfollowUser(String userId) async {
+    await _userRepository.removeFollowing(getUserId(), userId);
+    await _userRepository.removeFollower(userId, getUserId());
+    getUser();
   }
 
 
@@ -128,6 +145,49 @@ void getUser() async {
       type: type,
       );
   }
+
+  Future<void> setProfilePicture(String userId, File file) async {
+    return _userRepository.setProfilePicture(
+      userId: userId,
+      file: file,
+    );
+  }
+  Future<String> getProfilePictureUrl(String userId) async {
+    return await _userRepository.getProfilePictureUrl(userId: userId);
+  }
+
+  Future<void> setProfileGradientColor1(String userId, Color color) async {
+    return _userRepository.setProfileGradientColor1(
+      userId,
+      color,
+    );
+  }
+  Future<void> setProfileGradientColor2(String userId, Color color) async {
+    return _userRepository.setProfileGradientColor2(
+      userId,
+      color,
+    );
+  }
+  Future<List<Color>> getProfileGradientColors(String userId) async {
+    return await _userRepository.getGradientColors(userId);
+  }
+
+  Future<int> getFollowingCount(String userId) async {
+    int followingCount = 0;
+    await getFollowing(userId).then((value) => followingCount = value.length);
+    return followingCount;
+  }
+  Future<int> getFollowerCount(String userId) async {
+    int followerCount = 0;
+    await getFollowers(userId).then((value) => followerCount = value.length);
+    return followerCount;
+  }
+
+  Future<List<String>> searchUsers(String query) async {
+    return await _userRepository.searchUsers(query);
+  }
+
+
 
 
 }

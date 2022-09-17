@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:thentic_app/cubits/feed/feed_cubit.dart';
+import 'package:thentic_app/cubits/navigation/navigation_cubit.dart';
 import 'package:thentic_app/cubits/user/user_cubit.dart';
 import 'package:thentic_app/cubits/utility/utility_cubit.dart';
 
@@ -16,6 +17,9 @@ class AppBlocProviders {
       ),
       BlocProvider<UtilityCubit>(
         create: (context) => GetIt.I<UtilityCubit>(),
+      ),
+      BlocProvider<NavigationCubit>(
+        create: (context) => GetIt.I<NavigationCubit>(),
       ),
     ];
 }

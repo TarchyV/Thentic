@@ -5,6 +5,11 @@ import 'package:thentic_app/resources/post.dart';
 
 part 'feed_state.dart';
 
+
+enum FeedType {
+  home,
+  profile,
+}
 class FeedCubit extends Cubit<FeedState> {
   FeedRepository _feedRepository;
   FeedCubit(this._feedRepository) : super(FeedInitial());
@@ -18,8 +23,10 @@ class FeedCubit extends Cubit<FeedState> {
     emit(FeedLoading());
     try {
       List<Post> feed = await _feedRepository.getFeed(following);
+      print("FEED RECEIVED: ${feed}");
       emit(FeedLoaded(feed));
     } catch (e) {
+      print("FAILED TO LOAD FEED");
       print(e);
     }
 

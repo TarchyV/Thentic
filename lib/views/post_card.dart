@@ -1,7 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:thentic_app/cubits/user/user_cubit.dart';
 import 'package:thentic_app/resources/post.dart';
+import 'package:thentic_app/views/profile.dart';
 import 'package:video_player/video_player.dart';
 
 
@@ -20,6 +22,7 @@ class _PostCardState extends State<PostCard> {
   String fullCaption = "";
   PostType postType = PostType.IMAGE;
   String postUrl = "";
+
 late VideoPlayerController _videoController;
 
 
@@ -60,7 +63,9 @@ late VideoPlayerController _videoController;
   onVideoEnd(){
   if(_videoController.value.position == _videoController.value.duration){
     print("Video Ended~!");
+    if(mounted){
     setState((){});
+    }
   }
     
   }
@@ -85,8 +90,21 @@ late VideoPlayerController _videoController;
     }
 
   }
-
+double _captionContainerHeight = 30;
+ void calculateLineCountForContainerSize(){
+  if(fullCaption != ""){
+    var _captionLines = fullCaption.split(" ");
+    var _captionLineCount = _captionLines.length;
+    setState(() {
+      _captionContainerHeight = _captionLineCount * 5;
+    });
+  }
+ }
  
+  bool _isExpanded() {
+    return _captionContainerHeight != 30 ? true : false;
+  }
+
 
 
 
@@ -108,11 +126,16 @@ late VideoPlayerController _videoController;
 
 
 
+
+
+
   @override
   Widget build(BuildContext context) {
    //Create a social media style card
-    return Container(
-      height: 550,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      height: 520 + _captionContainerHeight,
       margin: const EdgeInsets.all(7.0),
       padding: const EdgeInsets.only(left:0.0,right:0.0,top:0.0),
       decoration: const BoxDecoration(
@@ -168,14 +191,24 @@ late VideoPlayerController _videoController;
               Align(
                 alignment: Alignment.bottomCenter,
                 child: SizedBox(
-                  height: 60,
+                  height: 25 + _captionContainerHeight,
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                         Padding(
                           padding: const EdgeInsets.only(top:4.0),
                           child:
                           viewsIcon()),
-                          textSection(),
+                          Expanded(
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              height: _captionContainerHeight,
+                              child: textSection(),
+                            ),
+                          )
+                          
                     ],
                   )
                   
@@ -198,19 +231,24 @@ Widget headLine(){
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-          Text("@$username", style: 
-          const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-          color: Colors.white,
-          shadows: [
-            Shadow(
-              blurRadius: 3.0,
-              color: Colors.black,
-              offset: Offset(1.0, 1.0),
-            ),
-          ],
-          ),),
+          InkWell(
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(userId: widget.post.userId,)));
+            },
+            child: Text("@$username", style: 
+            const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: Colors.white,
+            shadows: [
+              Shadow(
+                blurRadius: 3.0,
+                color: Colors.black,
+                offset: Offset(1.0, 1.0),
+              ),
+            ],
+            ),),
+          ),
           const SizedBox(
             height: 4,
           ),
@@ -232,62 +270,69 @@ Widget headLine(){
 }
 
 Widget textSection(){
-  return Expanded(
-        child: Row(
-          children: [
-              RichText(
-              text: TextSpan(
-                text: "@$username ",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.white,
-                  ),
-                children: <TextSpan>[
-                  TextSpan(
-                    text: caption,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.normal,
-                      fontSize: 14,
-                      color: Colors.white,
-                      ),
-                  ),
-                ],
-              ),
-              ),
-          if(fullCaption != "")
-          InkWell(
-            onTap: (){
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text("@$username"),
-                    content: Text(fullCaption),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("Close"),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            child: const Text("read more", style: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+  return Column(
+    children: [
+       Row(
+    children: [
       
-
+        RichText(
+        text: TextSpan(
+          recognizer: TapGestureRecognizer()
+            ..onTap = () {
+              setState(() {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(userId: widget.post.userId,)));
+              });
+            },
+          text: "@$username ",
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+            color: Colors.white,
+            ),
+          children: <TextSpan>[
+          !_isExpanded()?  TextSpan(
+              text: caption,
+              style: const TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 14,
+                color: Colors.white,
+                ),
+            ): TextSpan(text:''),
           ],
         ),
-      );
+        ),
+    if(fullCaption != "")
+    InkWell(
+      onTap: (){
+        if(_isExpanded()){
+          setState(() {
+            _captionContainerHeight = 30;
+          });
+        } else {
+          calculateLineCountForContainerSize();
+        }
+      },
+      child:  Text( _isExpanded()? "show less" : "read more", style: const TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+      
+
+    ],
+  ),
+      _isExpanded()?  Padding(
+  padding: const EdgeInsets.all(8.0),
+  child: Text(fullCaption, style: const TextStyle(
+      color: Colors.white,
+      fontSize: 14,
+    )),
+      ): Container()
+    ],
+
+  );
 }
 
 
